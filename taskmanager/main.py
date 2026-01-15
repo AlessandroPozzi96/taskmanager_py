@@ -22,6 +22,19 @@ def cmd_add(args: argparse.Namespace, repo: TaskRepository) -> None:
 
     print(f"Tâche ajoutée [{task.id} {task.title}]")
 
+def cmd_remove(args: argparse.Namespace, repo: TaskRepository) -> None:
+    tasks = repo.load()
+    task_Id = args.id
+
+    for task in tasks:
+        if task.id == task_Id:
+            tasks.remove(task)
+            repo.save(tasks)
+            print(f"Tâche {task_Id} supprimée avec succès")
+            return
+    
+    print(f"Tâche {task_Id} introuvable..")
+
 def cmd_list(args: argparse.Namespace, repo: TaskRepository) -> None:
     tasks = repo.load()
 
@@ -51,6 +64,10 @@ def build_parser() -> argparse.ArgumentParser:
     add_parser = subparsers.add_parser("add", help="Ajouter une tâche")
     add_parser.add_argument("title", help="Titre de la tâche")
     add_parser.set_defaults(func=cmd_add)
+
+    remove_parser = subparsers.add_parser("remove", help="Supprimer une tâche")
+    remove_parser.add_argument("id", type=int, help="Identifiant de la tâche")
+    remove_parser.set_defaults(func=cmd_remove)
 
     list_parser = subparsers.add_parser("list", help="Lister les tâches")
     list_parser.set_defaults(func=cmd_list)
